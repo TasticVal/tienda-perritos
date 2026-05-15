@@ -1,12 +1,13 @@
-FROM nginx:alpine
+FROM node:18-alpine
 
-# Limpia contenido por defecto
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copia los archivos del frontend
-COPY index.html app.js /usr/share/nginx/html/
+COPY package*.json ./
 
-# Copia la configuración custom de Nginx
-COPY default.conf /etc/nginx/conf.d/default.conf
+RUN npm install --production
 
-EXPOSE 80
+COPY . .
+
+EXPOSE 3001
+
+CMD ["npm", "start"]
