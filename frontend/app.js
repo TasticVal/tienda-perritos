@@ -1,9 +1,11 @@
 /**
  * Frontend simple para CRUD de productos de la tienda de perritos.
+ * Configurado para usar el proxy de Nginx.
  */
 
-// URL base de la API apuntando directamente al puerto público del backend
-const API_BASE = "http://32.198.109.220:3001/api";
+// IMPORTANTE: Al usar Nginx como proxy, usamos una ruta relativa.
+// El navegador le pedirá a "tu-ip-frontend/api/..." y Nginx lo mandará al backend.
+const API_BASE = "/api";
 
 let editandoId = null;
 
@@ -27,6 +29,7 @@ function setStatus(mensaje, tipo = "ok") {
 // Cargar todos los productos (GET)
 async function cargarProductos() {
   try {
+    // Esto llamará a /api/productos a través de Nginx
     const res = await fetch(`${API_BASE}/productos`);
     if (!res.ok) throw new Error("Error al cargar productos");
     const data = await res.json();
@@ -34,12 +37,17 @@ async function cargarProductos() {
     setStatus("Productos cargados correctamente.", "ok");
   } catch (err) {
     console.error(err);
-    setStatus("No se pudieron cargar los productos. ¿Está el backend levantado?", "error");
+    setStatus("Error de conexión. Revisa que el proxy de Nginx apunte a la IP privada correcta.", "error");
   }
 }
 
 function renderProductos(productos) {
   tbody.innerHTML = "";
+  if (productos.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6'>No hay productos registrados.</td></tr>";
+    return;
+  }
+  
   productos.forEach((p) => {
     const tr = document.createElement("tr");
 
@@ -142,7 +150,6 @@ async function guardarProducto() {
   }
 }
 
-// Obtener un producto para editar (GET por ID)
 async function editarProducto(id) {
   try {
     const res = await fetch(`${API_BASE}/productos/${id}`);
@@ -161,7 +168,6 @@ async function editarProducto(id) {
   }
 }
 
-// Eliminar un producto (DELETE)
 async function eliminarProducto(id) {
   try {
     const res = await fetch(`${API_BASE}/productos/${id}`, { method: "DELETE" });
