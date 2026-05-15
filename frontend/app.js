@@ -2,13 +2,8 @@
  * Frontend simple para CRUD de productos de la tienda de perritos.
  */
 
-// Determinar la URL base de la API según el host
-// frontend/app.js
-
-const API_BASE = "/api/productos";
-
-// Ejemplo: const API_BASE = "http://10.0.2.30:3001/api/productos";
-
+// URL base de la API apuntando directamente al puerto público del backend
+const API_BASE = "http://32.198.109.220:3001/api";
 
 let editandoId = null;
 
@@ -29,9 +24,10 @@ function setStatus(mensaje, tipo = "ok") {
   statusDiv.className = "status " + tipo;
 }
 
+// Cargar todos los productos (GET)
 async function cargarProductos() {
   try {
-    const res = await fetch(API_BASE);
+    const res = await fetch(`${API_BASE}/productos`);
     if (!res.ok) throw new Error("Error al cargar productos");
     const data = await res.json();
     renderProductos(data);
@@ -105,6 +101,7 @@ function validarProducto(prod) {
   return null;
 }
 
+// Guardar o Actualizar producto (POST / PUT)
 async function guardarProducto() {
   const producto = obtenerDatosFormulario();
   const error = validarProducto(producto);
@@ -117,14 +114,14 @@ async function guardarProducto() {
     let res;
     if (editandoId) {
       // Actualizar
-      res = await fetch(`${API_BASE}/${editandoId}`, {
+      res = await fetch(`${API_BASE}/productos/${editandoId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(producto),
       });
     } else {
       // Crear
-      res = await fetch(API_BASE, {
+      res = await fetch(`${API_BASE}/productos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(producto),
@@ -145,9 +142,10 @@ async function guardarProducto() {
   }
 }
 
+// Obtener un producto para editar (GET por ID)
 async function editarProducto(id) {
   try {
-    const res = await fetch(`${API_BASE}/${id}`);
+    const res = await fetch(`${API_BASE}/productos/${id}`);
     if (!res.ok) throw new Error("No se pudo obtener el producto");
     const p = await res.json();
     editandoId = p.id;
@@ -163,9 +161,10 @@ async function editarProducto(id) {
   }
 }
 
+// Eliminar un producto (DELETE)
 async function eliminarProducto(id) {
   try {
-    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_BASE}/productos/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Error al eliminar producto");
     await cargarProductos();
     setStatus("Producto eliminado correctamente.", "ok");
