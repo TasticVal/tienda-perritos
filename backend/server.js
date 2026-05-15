@@ -5,17 +5,21 @@ const mysql = require("mysql2/promise");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// --- CAMBIA ESTE BLOQUE EN TU SERVER.JS ---
-const {
-  DB_HOST = "10.0.155.80",    // La IP privada real de tu EC2 DB que vimos antes
-  DB_USER = "alumno",         // DEBE SER 'alumno', no 'root'
-  DB_PASSWORD = "alumno123",  // DEBE SER 'alumno123', no 'admin123'
-  DB_NAME = "tienda_perritos",
-  DB_PORT = 3306,
-} = process.env;
-// ------------------------------------------
+// --- CONFIGURACIÓN DE CONEXIÓN CORREGIDA (FORZANDO VALORES SEGUROS) ---
+const DB_HOST = process.env.DB_HOST || "10.0.155.80";
+const DB_USER = process.env.DB_USER || "alumno";
+const DB_PASSWORD = process.env.DB_PASSWORD || "alumno123";
+const DB_NAME = process.env.DB_NAME || "tienda_perritos";
+const DB_PORT = parseInt(process.env.DB_PORT || "3306", 10);
+// ----------------------------------------------------------------------
 
-app.use(cors());
+// Habilitamos CORS de forma explícita para evitar bloqueos del navegador
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"]
+}));
+
 app.use(express.json());
 
 let pool;
