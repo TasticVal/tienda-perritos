@@ -5,13 +5,15 @@ const mysql = require("mysql2/promise");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// --- CAMBIA ESTE BLOQUE EN TU SERVER.JS ---
 const {
-  DB_HOST = "10.0.2.134", // acá colocar la IP Privada EC2 DB
-  DB_USER = "root",
-  DB_PASSWORD = "admin123",
+  DB_HOST = "10.0.155.80",    // La IP privada real de tu EC2 DB que vimos antes
+  DB_USER = "alumno",         // DEBE SER 'alumno', no 'root'
+  DB_PASSWORD = "alumno123",  // DEBE SER 'alumno123', no 'admin123'
   DB_NAME = "tienda_perritos",
   DB_PORT = 3306,
 } = process.env;
+// ------------------------------------------
 
 app.use(cors());
 app.use(express.json());
